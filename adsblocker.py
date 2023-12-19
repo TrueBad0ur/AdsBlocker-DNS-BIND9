@@ -4,14 +4,8 @@ import datetime
 
 # Define the default route and the blocklist URL
 defaultRoute = "0.0.0.0"
-blocklist1 = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
-blocklist2 = "https://raw.githubusercontent.com/d3ward/toolz/master/src/d3host.txt"
-blocklist3 = "https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt"
-blocklist4 = "https://www.github.developerdan.com/hosts/lists/ads-and-tracking-extended.txt"
-blocklist5 = "https://www.github.developerdan.com/hosts/lists/amp-hosts-extended.txt"
-blocklist6 = "https://www.github.developerdan.com/hosts/lists/dating-services-extended.txt"
-blocklist7 = "https://www.github.developerdan.com/hosts/lists/hate-and-junk-extended.txt"
-blocklist8 = "https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt"
+
+blocklists = ["https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts", "https://raw.githubusercontent.com/d3ward/toolz/master/src/d3host.txt", "https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt", "https://www.github.developerdan.com/hosts/lists/ads-and-tracking-extended.txt", "https://www.github.developerdan.com/hosts/lists/amp-hosts-extended.txt", "https://www.github.developerdan.com/hosts/lists/dating-services-extended.txt", "https://www.github.developerdan.com/hosts/lists/hate-and-junk-extended.txt", "https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt"]
 
 # Define the zone header for the output file
 zoneHeader = """$TTL 1w    ; default TTL = 1w
@@ -39,96 +33,29 @@ now = datetime.datetime.now()
 totalDomains = 0
 
 # Open the blocklist URL and iterate through each line
-with urllib.request.urlopen(blocklist1) as f:
-    for bytes in f:
+for blocklist in blocklists:
+  with urllib.request.urlopen(blocklist) as f:
+      for bytes in f:
 
-        # Decode the line from bytes to string and remove any leading/trailing white space
-        line = bytes.decode("utf-8").strip()
+          # Decode the line from bytes to string and remove any leading/trailing white space
+          line = bytes.decode("utf-8").strip()
 
-        # If the line starts with the default route, extract the domain
-        if (line.startswith(defaultRoute)):
-          # Ignore the IP address and extract the domain
-          domain = line[8:]
+          # If the line starts with the default route, extract the domain
+          if (line.startswith(defaultRoute)):
+            # Ignore the IP address and extract the domain
+            domain = line[8:]
 
-          # If the domain is the default route or contains a comment, skip it
-          if domain == defaultRoute or "#" in domain:
-            continue
+            # If the domain is the default route or contains a comment, skip it
+            if domain == defaultRoute or "#" in domain:
+              continue
 
-          # Write the domain as a CNAME record to the output file
-          file.write(domain+" CNAME .\n")
+            # Write the domain as a CNAME record to the output file
+            file.write(domain+" CNAME .\n")
 
-          # Increment the total number of updated domains
-          totalDomains = totalDomains + 1
+            # Increment the total number of updated domains
+            totalDomains = totalDomains + 1
 
-with urllib.request.urlopen(blocklist2) as f:
-    for bytes in f:
-        line = bytes.decode("utf-8").strip()
-        if (line.startswith(defaultRoute)):
-          domain = line[8:]
-          if domain == defaultRoute or "#" in domain:
-            continue
-          file.write(domain+" CNAME .\n")
-          totalDomains = totalDomains + 1
 
-with urllib.request.urlopen(blocklist3) as f:
-    for bytes in f:
-        line = bytes.decode("utf-8").strip()
-        if (line.startswith(defaultRoute)):
-          domain = line[8:]
-          if domain == defaultRoute or "#" in domain:
-            continue
-          file.write(domain+" CNAME .\n")
-          totalDomains = totalDomains + 1
-
-with urllib.request.urlopen(blocklist4) as f:
-    for bytes in f:
-        line = bytes.decode("utf-8").strip()
-        if (line.startswith(defaultRoute)):
-          domain = line[8:]
-          if domain == defaultRoute or "#" in domain:
-            continue
-          file.write(domain+" CNAME .\n")
-          totalDomains = totalDomains + 1
-
-with urllib.request.urlopen(blocklist5) as f:
-    for bytes in f:
-        line = bytes.decode("utf-8").strip()
-        if (line.startswith(defaultRoute)):
-          domain = line[8:]
-          if domain == defaultRoute or "#" in domain:
-            continue
-          file.write(domain+" CNAME .\n")
-          totalDomains = totalDomains + 1
-
-with urllib.request.urlopen(blocklist6) as f:
-    for bytes in f:
-        line = bytes.decode("utf-8").strip()
-        if (line.startswith(defaultRoute)):
-          domain = line[8:]
-          if domain == defaultRoute or "#" in domain:
-            continue
-          file.write(domain+" CNAME .\n")
-          totalDomains = totalDomains + 1
-
-with urllib.request.urlopen(blocklist7) as f:
-    for bytes in f:
-        line = bytes.decode("utf-8").strip()
-        if (line.startswith(defaultRoute)):
-          domain = line[8:]
-          if domain == defaultRoute or "#" in domain:
-            continue
-          file.write(domain+" CNAME .\n")
-          totalDomains = totalDomains + 1
-
-with urllib.request.urlopen(blocklist8) as f:
-    for bytes in f:
-        line = bytes.decode("utf-8").strip()
-        if (line.startswith(defaultRoute)):
-          domain = line[8:]
-          if domain == defaultRoute or "#" in domain:
-            continue
-          file.write(domain+" CNAME .\n")
-          totalDomains = totalDomains + 1
 
 # Close the output file
 file.close()
