@@ -4,7 +4,8 @@ import datetime
 
 # Define the default route and the blocklist URL
 defaultRoute = "0.0.0.0"
-blocklist = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+blocklist1 = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+blocklist2 = "https://raw.githubusercontent.com/d3ward/toolz/master/src/d3host.txt"
 
 # Define the zone header for the output file
 zoneHeader = """$TTL 1w    ; default TTL = 1w
@@ -32,21 +33,42 @@ now = datetime.datetime.now()
 totalDomains = 0
 
 # Open the blocklist URL and iterate through each line
-with urllib.request.urlopen(blocklist) as f:
+with urllib.request.urlopen(blocklist1) as f:
     for bytes in f:
-      
+
         # Decode the line from bytes to string and remove any leading/trailing white space
         line = bytes.decode("utf-8").strip()
-        
+
         # If the line starts with the default route, extract the domain
         if (line.startswith(defaultRoute)):
           # Ignore the IP address and extract the domain
           domain = line[8:]
-          
+
           # If the domain is the default route or contains a comment, skip it
           if domain == defaultRoute or "#" in domain:
             continue
-          
+
+          # Write the domain as a CNAME record to the output file
+          file.write(domain+" CNAME .\n")
+
+          # Increment the total number of updated domains
+          totalDomains = totalDomains + 1
+
+with urllib.request.urlopen(blocklist2) as f:
+    for bytes in f:
+
+        # Decode the line from bytes to string and remove any leading/trailing white space
+        line = bytes.decode("utf-8").strip()
+
+        # If the line starts with the default route, extract the domain
+        if (line.startswith(defaultRoute)):
+          # Ignore the IP address and extract the domain
+          domain = line[8:]
+
+          # If the domain is the default route or contains a comment, skip it
+          if domain == defaultRoute or "#" in domain:
+            continue
+
           # Write the domain as a CNAME record to the output file
           file.write(domain+" CNAME .\n")
 
